@@ -1,0 +1,51 @@
+name: React-app-mulearn Native Deploy Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+# Specific permissions for deploying directly to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent redundant builds from running at the same time and crashing into each other
+concurrency:
+  group: "pages" # this is used to group the builds together. 
+  cancel-in-progress: true # this is used to cancel the previous build if a new build is started. 
+
+jobs:
+  deploy:
+    # Here the enviornment is set to github-pages. This is needed because it automatically gives us that nice link in the Actions tab.
+    environment:
+      name: github-pages 
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: move code to Runner
+        uses: actions/checkout@v4
+        
+      - name: Setup Node (because its a react app)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' 
+          
+      - name: Install dependencies (npm i)
+        run: npm install
+        
+      - name: Build the app (npm run build)
+        run: npm run build
+        
+      - name: Setup GitHub Pages natively # This is needed to deploy the app directly to the GitHub Pages environment. earlier we used to do this manually by going to settings and enabling GitHub Pages. Now we can do it directly from the workflow.
+        uses: actions/configure-pages@v4 # The permissions we gave at the top are used here.
+        
+      - name: Upload the dist folder as an artifact # This takes everything Vite outputs and bundles it into a zip package
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' # This is the folder that contains the built app.
+          
+      - name: Deploy the artifact directly to the GitHub Pages environment # This is the final step that deploys the app to the GitHub Pages environment. 
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -2,7 +2,7 @@ name: React-app-mulearn Native Deploy Pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches: ["task-3"]
 
 # Specific permissions for deploying directly to GitHub Pages
 permissions:
@@ -34,9 +34,11 @@ jobs:
           
       - name: Install dependencies (npm i)
         run: npm install
+        working-directory: ./sharonshaji-1@mulearn/Task-3
         
       - name: Build the app (npm run build)
         run: npm run build
+        working-directory: ./sharonshaji-1@mulearn/Task-3
         
       - name: Setup GitHub Pages natively # This is needed to deploy the app directly to the GitHub Pages environment. earlier we used to do this manually by going to settings and enabling GitHub Pages. Now we can do it directly from the workflow.
         uses: actions/configure-pages@v4 # The permissions we gave at the top are used here.
@@ -44,7 +46,7 @@ jobs:
       - name: Upload the dist folder as an artifact # This takes everything Vite outputs and bundles it into a zip package
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist' # This is the folder that contains the built app.
+          path: './sharonshaji-1@mulearn/Task-3/dist' # This is the folder that contains the built app.
           
       - name: Deploy the artifact directly to the GitHub Pages environment # This is the final step that deploys the app to the GitHub Pages environment. 
         id: deployment

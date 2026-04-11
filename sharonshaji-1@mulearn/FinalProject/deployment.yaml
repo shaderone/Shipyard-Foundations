@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-x-k8s
+#spec : what k8s should do
+spec:
+  replicas: 3
+  selector:
+    # Deployment selector tells Kubernetes which pods belong to this Deployment
+    matchLabels:
+      app: simple-web-app
+  # template acts as a blueprint for the pods
+  template:
+    metadata:
+      labels:
+        app: simple-web-app
+    # pod's own spec - what pods do
+    spec:
+      containers:
+        # container name inside the pod - a simple label used by k8s to identify the container
+        - name: web-app
+          # the name of the image created using dockerfile
+          image: web-app:v1
+          # since using kind, the image is pulled locally, if not found try to download it.
+          imagePullPolicy: IfNotPresent
+          # declares the port the container listens on.
+          ports:
+            - containerPort: 80
+          env:
+            - name: STUDENT_NAME
+              value: "sharon"
